@@ -4,7 +4,7 @@ metadata:
   name: "lab-shared-vcluster"
 spec:
   title: "Test of shared virtual cluster"
-  description: "Test of using shared virtual cluster and single namespace per session"
+  description: "Test of using shared virtual cluster and single namespace per session."
   workshop:
     files:
     - http:
@@ -51,8 +51,8 @@ spec:
       env:
       - name: SESSION_NAME
         value: $(session_name)
-      - name: KUBERNETES_API_URL
-        value: https://shared-vcluster.$(workshop_namespace).svc.$(cluster_domain):443
+      - name: CLUSTER_NAME
+        value: my-vcluster
       volumeMounts:
       - name: shared-vcluster-config
         mountPath: /opt/shared-vcluster-config
