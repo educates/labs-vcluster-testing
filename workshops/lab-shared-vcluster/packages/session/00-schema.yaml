@@ -1,0 +1,6 @@
+#@data/values-schema
+---
+
+user: ""
+namespaces:
+- ""

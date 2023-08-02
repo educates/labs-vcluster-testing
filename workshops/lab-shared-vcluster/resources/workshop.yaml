@@ -1,0 +1,194 @@
+apiVersion: training.educates.dev/v1beta1
+kind: Workshop
+metadata:
+  name: "lab-shared-vcluster"
+spec:
+  title: "Test of shared virtual cluster"
+  description: "Test of using shared virtual cluster and single namespace per session"
+  workshop:
+    files:
+    - http:
+        url: http://$(assets_repository)/lab-shared-vcluster-files/.tgz
+      includePaths:
+      - /workshop/**
+  session:
+    namespaces:
+      budget: medium
+      security:
+        token:
+          enabled: false
+    applications:
+      terminal:
+        enabled: true
+        layout: split
+      editor:
+        enabled: true
+      console:
+        enabled: true
+        vendor: octant
+        octant:
+          version: latest
+      vcluster:
+        enabled: false
+    volumes:
+    - name: shared-vcluster-config
+      secret:
+        secretName: vc-shared-vcluster
+    - name: shared-vcluster-scripts
+      secret:
+        secretName: shared-vcluster-scripts
+        defaultMode: 0755
+    - name: vcluster-session-config
+      emptyDir: {}
+    volumeMounts:
+    - name: vcluster-session-config
+      mountPath: /opt/kubeconfig
+    initContainers:
+    - name: setup-shared-vcluster
+      image: $(workshop_image)
+      command:
+      - /opt/shared-vcluster-scripts/setup.sh
+      env:
+      - name: SESSION_NAME
+        value: $(session_name)
+      - name: KUBERNETES_API_URL
+        value: https://shared-vcluster.$(workshop_namespace).svc.$(cluster_domain):443
+      volumeMounts:
+      - name: shared-vcluster-config
+        mountPath: /opt/shared-vcluster-config
+      - name: shared-vcluster-scripts
+        mountPath: /opt/shared-vcluster-scripts
+      - name: vcluster-session-config
+        mountPath: /opt/vcluster-session-config
+    objects:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: vcluster-session-values-$(session_name)
+        namespace: $(workshop_namespace)
+      stringData:
+        values.yaml: |
+          user: $(session_name)
+          namespaces:
+          - $(session_name)
+    - apiVersion: kappctrl.k14s.io/v1alpha1
+      kind: App
+      metadata:
+        name: vcluster-session-$(session_name)
+        namespace: $(workshop_namespace)
+      spec:
+        syncPeriod: 720h
+        cluster:
+          namespace: default
+          kubeconfigSecretRef:
+            name: vc-shared-vcluster
+            key: config
+        fetch:
+        - http:
+            url: http://$(assets_repository)/lab-shared-vcluster-files/packages/session/.tgz
+          path: packages/session
+        template:
+        - ytt:
+            paths:
+            - packages/session
+            valuesFrom:
+            - secretRef:
+                name: vcluster-session-values-$(session_name)
+        deploy:
+        - kapp:
+            rawOptions:
+            - --app-changes-max-to-keep=5
+  environment:
+    assets:
+      files:
+      - image:
+          url: $(image_repository)/lab-shared-vcluster-files:latest
+        path: lab-shared-vcluster-files
+    objects:
+    - apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: kapp-installer
+        namespace: $(workshop_namespace)
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: $(workshop_namespace)-kapp-installer
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+        - kind: ServiceAccount
+          name: kapp-installer
+          namespace: $(workshop_namespace)
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: shared-vcluster-values
+        namespace: $(workshop_namespace)
+      stringData:
+        values.yaml: |
+          vcluster:
+            image: rancher/k3s:v1.25.3-k3s1
+          syncer:
+            extraArgs:
+            - --tls-san=shared-vcluster.$(workshop_namespace).svc.$(cluster_domain)
+            - --out-kube-config-server=https://shared-vcluster.$(workshop_namespace).svc.$(cluster_domain)
+    - apiVersion: kappctrl.k14s.io/v1alpha1
+      kind: App
+      metadata:
+        name: shared-vcluster
+        namespace: $(workshop_namespace)
+      spec:
+        serviceAccountName: kapp-installer
+        syncPeriod: 720h
+        noopDelete: true
+        fetch:
+        - helmChart:
+            name: vcluster
+            repository:
+              url: https://charts.loft.sh
+        template:
+        - helmTemplate:
+            name: shared-vcluster
+            namespace: $(workshop_namespace)
+            valuesFrom:
+            - secretRef:
+                name: shared-vcluster-values
+        deploy:
+        - kapp:
+            rawOptions:
+            - --app-changes-max-to-keep=5
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: vcluster-environment-values
+        namespace: $(workshop_namespace)
+      stringData:
+        values.yaml: |
+          namespace: $(workshop_namespace)
+    - apiVersion: kappctrl.k14s.io/v1alpha1
+      kind: App
+      metadata:
+        name: vcluster-environment
+        namespace: $(workshop_namespace)
+      spec:
+        serviceAccountName: kapp-installer
+        syncPeriod: 720h
+        noopDelete: true
+        fetch:
+        - http:
+            url: http://$(assets_repository)/lab-shared-vcluster-files/packages/environment/.tgz
+          path: packages/environment
+        template:
+        - ytt:
+            paths:
+            - packages/environment
+            valuesFrom:
+            - secretRef:
+                name: vcluster-environment-values
+        deploy:
+        - kapp:
+            rawOptions:
+            - --app-changes-max-to-keep=5
