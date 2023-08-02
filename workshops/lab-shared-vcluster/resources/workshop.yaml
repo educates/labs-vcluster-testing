@@ -8,7 +8,7 @@ spec:
   workshop:
     files:
     - http:
-        url: http://$(assets_repository)/lab-shared-vcluster-files/.tgz
+        url: http://$(assets_repository)/workshops/lab-shared-vcluster/.tgz
       includePaths:
       - /workshop/**
   session:
@@ -85,7 +85,7 @@ spec:
             key: config
         fetch:
         - http:
-            url: http://$(assets_repository)/lab-shared-vcluster-files/packages/session/.tgz
+            url: http://$(assets_repository)/workshops/lab-shared-vcluster/packages/session/.tgz
           path: packages/session
         template:
         - ytt:
@@ -102,8 +102,9 @@ spec:
     assets:
       files:
       - image:
-          url: $(image_repository)/lab-shared-vcluster-files:latest
-        path: lab-shared-vcluster-files
+          url: $(image_repository)/labs-vcluster-testing-files:latest
+        includePaths:
+        - /workshops/lab-shared-vcluster/**
     objects:
     - apiVersion: v1
       kind: ServiceAccount
@@ -179,7 +180,7 @@ spec:
         noopDelete: true
         fetch:
         - http:
-            url: http://$(assets_repository)/lab-shared-vcluster-files/packages/environment/.tgz
+            url: http://$(assets_repository)/workshops/lab-shared-vcluster/packages/environment/.tgz
           path: packages/environment
         template:
         - ytt:
