@@ -21,5 +21,7 @@ kubectl apply -f https://github.com/educates/labs-vcluster-testing/releases/late
 kubectl apply -f https://github.com/educates/labs-vcluster-testing/releases/latest/download/trainingportal.yaml
 ```
 
+Educates version 2.6.0 or later is required to run these workshops.
+
 Note that some workshops have pre-requisites that need to be satisified else
 they will not work. Check the README for each workshop for more details.
