@@ -14,6 +14,11 @@ spec:
       defaults:
         reserved: 0
   workshops:
+  - name: lab-builtin-vcluster
+    expires: 40m
+    overtime: 10m
+    deadline: 60m
+    orphaned: 5m
   - name: lab-shared-vcluster
     expires: 40m
     overtime: 10m

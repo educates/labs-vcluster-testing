@@ -1,0 +1,36 @@
+apiVersion: training.educates.dev/v1beta1
+kind: Workshop
+metadata:
+  name: "lab-builtin-vcluster"
+spec:
+  title: "Test of builtin virtual cluster"
+  description: "Test of using builtin support for creating a virtual cluster."
+  workshop:
+    files:
+    - http:
+        url: http://$(assets_repository)/workshops/lab-builtin-vcluster/.tgz
+      includePaths:
+      - /workshop/**
+  session:
+    namespaces:
+      budget: medium
+      security:
+        token:
+          enabled: false
+    applications:
+      terminal:
+        enabled: true
+        layout: split
+      editor:
+        enabled: true
+      console:
+        enabled: true
+      vcluster:
+        enabled: true
+  environment:
+    assets:
+      files:
+      - image:
+          url: $(image_repository)/labs-vcluster-testing-files:latest
+        includePaths:
+        - /workshops/lab-builtin-vcluster/**
