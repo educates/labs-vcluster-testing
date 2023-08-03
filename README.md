@@ -13,3 +13,13 @@ Workshops included are:
 * [lab-remote-cluster](workshops/lab-remote-cluster) - A workshop demonstrating
   using a remote Kubernetes cluster, with workshops users getting access to only
   a single namespace in the remote cluster.
+
+To deploy all the workshops run:
+
+```
+kubectl apply -f https://github.com/educates/labs-vcluster-testing/releases/latest/download/workshops.yaml
+kubectl apply -f https://github.com/educates/labs-vcluster-testing/releases/latest/download/trainingportal.yaml
+```
+
+Note that some workshops have pre-requisites that need to be satisified else
+they will not work. Check the README for each workshop for more details.
