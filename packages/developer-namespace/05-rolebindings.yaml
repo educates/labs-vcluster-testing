@@ -1,15 +1,18 @@
 #@ load("@ytt:data", "data")
 
+#@ for name in data.values.namespaces:
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
-  name: #@ "namespace-reader-{}".format(data.values.user)
+  name: developer-session-role
+  namespace: #@ name
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: #@ "namespace-reader-{}".format(data.values.user)
+  name: admin
 subjects:
 - kind: ServiceAccount
-  name: #@ data.values.user
+  name: #@ data.values.developer
   namespace: default
+#@ end

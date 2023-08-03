@@ -1,6 +1,6 @@
 #@data/values-schema
 ---
 
-user: ""
+developer: ""
 namespaces:
 - ""

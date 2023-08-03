@@ -12,10 +12,14 @@ spec:
       maximum: 1
     workshop:
       defaults:
-        reserved: 1
-        initial: 0
+        reserved: 0
   workshops:
   - name: lab-shared-vcluster
+    expires: 40m
+    overtime: 10m
+    deadline: 60m
+    orphaned: 5m
+  - name: lab-remote-cluster
     expires: 40m
     overtime: 10m
     deadline: 60m
