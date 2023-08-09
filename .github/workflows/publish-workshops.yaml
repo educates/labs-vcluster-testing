@@ -54,7 +54,7 @@ jobs:
           educates publish-workshop workshops/${WORKSHOP} \
             --export-workshop ${OUTPUT_DIRECTORY}/workshops/${WORKSHOP}/workshop.yaml \
             --repository=ghcr.io/${REPOSITORY_OWNER}/${REPOSITORY_NAME} \
-            --image-version=${REPOSITORY_TAG} \
+            --workshop-version=${REPOSITORY_TAG} \
             --registry-username=${GITHUB_ACTOR} \
             --registry-password=${GITHUB_TOKEN}
         done
