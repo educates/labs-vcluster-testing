@@ -1,3 +1,9 @@
+#@ load("@ytt:data", "data")
+
+#@ imageCaching = getattr(data.values, "imageCaching", True)
+#@ localContent = getattr(data.values, "localContent", False)
+
+---
 apiVersion: training.educates.dev/v1beta1
 kind: Workshop
 metadata:
@@ -5,12 +11,28 @@ metadata:
 spec:
   title: "Test of using a remote cluster"
   description: "Test of using remote cluster and single namespace per session."
+  publish:
+    image: $(image_repository)/labs-vcluster-testing/lab-remote-cluster-files:$(workshop_version)
+    files:
+    - directory:
+        path: workshop
+      path: workshop
+    - directory:
+        path: ../../packages
+      path: packages
   workshop:
     files:
+    #@ if imageCaching:
     - http:
-        url: http://$(assets_repository)/workshops/lab-remote-cluster/.tgz
+        url: http://$(assets_repository)/.tgz
       includePaths:
-      - /workshop/**
+      - workshop/**
+    #@ else:
+    - image:
+        url: $(image_repository)/labs-vcluster-testing/lab-remote-cluster-files:$(workshop_version)
+      includePaths:
+      - workshop/**
+    #@ end
   session:
     namespaces:
       budget: medium
@@ -18,6 +40,18 @@ spec:
         token:
           enabled: false
     applications:
+      workshop:
+        enabled: true
+        #@ if localContent:
+        proxy:
+          protocol: http
+          host: localhost.$(ingress_domain)
+          port: 10081
+          changeOrigin: false
+          headers:
+          - name: X-Session-Name
+            value: $(session_name)
+        #@ end
       terminal:
         enabled: true
         layout: split
@@ -105,9 +139,16 @@ spec:
             name: admin-credentials-$(session_name)
             key: config
         fetch:
+        #@ if imageCaching:
         - http:
             url: http://$(assets_repository)/packages/developer-namespace/.tgz
           path: packages/developer-namespace
+        #@ else:
+        - image:
+            url: $(image_repository)/labs-vcluster-testing/lab-remote-cluster-files:$(workshop_version)
+          includePaths:
+          - packages/developer-namespace/**
+        #@ end
         template:
         - ytt:
             paths:
@@ -123,10 +164,7 @@ spec:
     assets:
       files:
       - image:
-          url: $(image_repository)/labs-vcluster-testing-files:latest
-        includePaths:
-        - /workshops/lab-remote-cluster/**
-        - /packages/**
+          url: $(image_repository)/labs-vcluster-testing/lab-remote-cluster-files:latest
     objects:
     - apiVersion: v1
       kind: ServiceAccount
@@ -163,9 +201,16 @@ spec:
         syncPeriod: 720h
         noopDelete: true
         fetch:
+        #@ if imageCaching:
         - http:
             url: http://$(assets_repository)/packages/cluster-credentials/.tgz
           path: packages/cluster-credentials
+        #@ else:
+        - image:
+            url: $(image_repository)/labs-vcluster-testing/lab-remote-cluster-files:$(workshop_version)
+          includePaths:
+          - packages/cluster-credentials/**
+        #@ end
         template:
         - ytt:
             paths:

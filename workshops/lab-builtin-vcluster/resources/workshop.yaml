@@ -1,3 +1,9 @@
+#@ load("@ytt:data", "data")
+
+#@ imageCaching = getattr(data.values, "imageCaching", True)
+#@ localContent = getattr(data.values, "localContent", False)
+
+---
 apiVersion: training.educates.dev/v1beta1
 kind: Workshop
 metadata:
@@ -5,12 +11,21 @@ metadata:
 spec:
   title: "Test of builtin virtual cluster"
   description: "Test of using builtin support for creating a virtual cluster."
+  publish:
+    image: $(image_repository)/labs-vcluster-testing/lab-builtin-vcluster-files:$(workshop_version)
+    files:
+    - directory:
+        path: workshop
+      path: workshop
   workshop:
     files:
+    #@ if imageCaching:
     - http:
-        url: http://$(assets_repository)/workshops/lab-builtin-vcluster/.tgz
-      includePaths:
-      - /workshop/**
+        url: http://$(assets_repository)/.tgz
+    #@ else:
+    - image:
+        url: $(image_repository)/labs-vcluster-testing/lab-builtin-vcluster-files:$(workshop_version)
+    #@ end
   session:
     namespaces:
       budget: medium
@@ -18,6 +33,18 @@ spec:
         token:
           enabled: false
     applications:
+      workshop:
+        enabled: true
+        #@ if localContent:
+        proxy:
+          protocol: http
+          host: localhost.$(ingress_domain)
+          port: 10081
+          changeOrigin: false
+          headers:
+          - name: X-Session-Name
+            value: $(session_name)
+        #@ end
       terminal:
         enabled: true
         layout: split
@@ -30,7 +57,7 @@ spec:
   environment:
     assets:
       files:
+      #@ if imageCaching:
       - image:
-          url: $(image_repository)/labs-vcluster-testing-files:latest
-        includePaths:
-        - /workshops/lab-builtin-vcluster/**
+          url: $(image_repository)/labs-vcluster-testing/lab-builtin-vcluster-files:$(workshop_version)
+      #@ end
