@@ -28,7 +28,7 @@ jobs:
         imgpkg pull -i ghcr.io/vmware-tanzu-labs/educates-client-programs:2.6.0-alpha.25 -o /tmp/client-programs
         mv /tmp/client-programs/educates-linux-amd64 /usr/local/bin/educates
 
-    - name: Setup variables repository and release details
+    - name: Setup repository variables and release details
       shell: bash
       run: |
         echo REPOSITORY_OWNER=$(echo "${{github.repository_owner}}" | tr '[:upper:]' '[:lower:]') >>${GITHUB_ENV}
