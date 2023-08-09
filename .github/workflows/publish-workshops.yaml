@@ -34,7 +34,7 @@ jobs:
       shell: bash
       run: |
         echo WORKSHOPS="lab-builtin-vcluster,lab-shared-vcluster,lab-remote-cluster" >>${GITHUB_ENV}
-        echo REPOSITORY_OWNER=$(echo "${{github.repository_owner}}"" | tr '[:upper:]' '[:lower:]') >>${GITHUB_ENV}
+        echo REPOSITORY_OWNER=$(echo "${{github.repository_owner}}" | tr '[:upper:]' '[:lower:]') >>${GITHUB_ENV}
         echo REPOSITORY_TAG=$(echo "${{github.ref}}" | sed -e 's%refs/tags/%%') >>${GITHUB_ENV}
 
     - name: Publish workshops and create workshop definition
