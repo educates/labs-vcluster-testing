@@ -1,0 +1,58 @@
+name: Publish Workshops
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+-alpha.[0-9]+"
+      - "[0-9]+.[0-9]+-beta.[0-9]+"
+      - "[0-9]+.[0-9]+-rc.[0-9]+"
+
+jobs:
+  publish-workshops:
+    runs-on: ubuntu-latest
+
+    if: ${{github.repository != 'vmware-tanzu-labs/educates-workshop-templates'}}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Carvel tools
+      shell: bash
+      run: curl -L https://carvel.dev/install.sh | bash
+
+    - name: Install Educates CLI
+      shell: bash
+      run: |
+        curl -Lo /usr/local/bin/educates https://github.com/vmware-tanzu-labs/educates-training-platform/releases/download/2.6.0-alpha.25/educates-linux-amd64
+        chmod +x /usr/local/bin/educates
+
+    - name: Calculate release variables
+      shell: bash
+      run: |
+        REPOSITORY_NAME=${{github.event.repository.name}}
+        echo "REPOSITORY_NAME=${REPOSITORY_NAME,,}" >>${GITHUB_ENV}
+        echo "REPOSITORY_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >>${GITHUB_ENV}
+        echo "REPOSITORY_TAG=${GITHUB_REF#refs/tags/}" >>${GITHUB_ENV}
+        echo "GITHUB_ACTOR=${{github.actor}}" >>${GITHUB_ENV}
+        echo "GITHUB_TOKEN=${{inputs.token}}" >>${GITHUB_ENV}
+        echo "OUTPUT_DIRECTORY=${{runner.temp}}" >>${GITHUB_ENV}
+
+    - name: Publish workshops and create workshop definition
+      shell: bash
+      run : |
+        WORKSHOPS="
+          lab-builtin-vcluster \
+          lab-shared-vcluster \
+          lab-remote-cluster \
+         "
+        for WORKSHOP in $WORKSHOPS; do
+          mkdir -p ${OUTPUT_DIRECTORY}/workshops/${WORKSHOP}
+          educates publish-workshop workshops/${WORKSHOP} \
+            --export-workshop ${OUTPUT_DIRECTORY}/workshops/${WORKSHOP}/workshop.yaml \
+            --repository=ghcr.io/${REPOSITORY_OWNER}/${REPOSITORY_NAME} \
+            --image-version=${REPOSITORY_TAG} \
+            --registry-username=${GITHUB_ACTOR} \
+            --registry-password=${GITHUB_TOKEN}
+        done
