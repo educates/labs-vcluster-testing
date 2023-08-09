@@ -38,7 +38,7 @@ jobs:
         echo "REPOSITORY_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >>${GITHUB_ENV}
         echo "REPOSITORY_TAG=${GITHUB_REF#refs/tags/}" >>${GITHUB_ENV}
         echo "GITHUB_ACTOR=${{github.actor}}" >>${GITHUB_ENV}
-        echo "GITHUB_TOKEN=${{inputs.token}}" >>${GITHUB_ENV}
+        echo "GITHUB_TOKEN=${{secrets.GITHUB_TOKEN}}" >>${GITHUB_ENV}
         echo "OUTPUT_DIRECTORY=${{runner.temp}}" >>${GITHUB_ENV}
 
     - name: Publish workshops and create workshop definition
@@ -53,7 +53,7 @@ jobs:
           mkdir -p ${OUTPUT_DIRECTORY}/workshops/${WORKSHOP}
           educates publish-workshop workshops/${WORKSHOP} \
             --export-workshop ${OUTPUT_DIRECTORY}/workshops/${WORKSHOP}/workshop.yaml \
-            --repository=ghcr.io/${REPOSITORY_OWNER}/${REPOSITORY_NAME} \
+            --repository=ghcr.io/${REPOSITORY_OWNER} \
             --workshop-version=${REPOSITORY_TAG} \
             --registry-username=${GITHUB_ACTOR} \
             --registry-password=${GITHUB_TOKEN}
