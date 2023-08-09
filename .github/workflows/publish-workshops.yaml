@@ -12,8 +12,6 @@ jobs:
   publish-workshops:
     runs-on: ubuntu-latest
 
-    if: ${{github.repository != 'vmware-tanzu-labs/educates-workshop-templates'}}
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -30,10 +28,9 @@ jobs:
         imgpkg pull -i ghcr.io/vmware-tanzu-labs/educates-client-programs:2.6.0-alpha.25 -o /tmp/client-programs
         mv /tmp/client-programs/educates-linux-amd64 /usr/local/bin/educates
 
-    - name: Setup the list of workshop names
+    - name: Setup variables repository and release details
       shell: bash
       run: |
-        echo WORKSHOPS="lab-builtin-vcluster,lab-shared-vcluster,lab-remote-cluster" >>${GITHUB_ENV}
         echo REPOSITORY_OWNER=$(echo "${{github.repository_owner}}" | tr '[:upper:]' '[:lower:]') >>${GITHUB_ENV}
         echo REPOSITORY_NAME=${{github.event.repository.name}} >>${GITHUB_ENV}
         echo REPOSITORY_TAG=$(echo "${{github.ref}}" | sed -e 's%refs/tags/%%') >>${GITHUB_ENV}
@@ -41,10 +38,10 @@ jobs:
     - name: Publish workshops and create workshop definition
       shell: bash
       run : |
-        for WORKSHOP in $(echo "$WORKSHOPS" | tr ',' '\n'); do
-          mkdir -p ${{runner.temp}}/workshops/${WORKSHOP}
-          educates publish-workshop workshops/${WORKSHOP} \
-            --export-workshop ${{runner.temp}}/workshops/${WORKSHOP}/workshop.yaml \
+        for WORKSHOP_DIRECTORY in workshops/*; do
+          mkdir -p ${{runner.temp}}/${WORKSHOP_DIRECTORY}
+          educates publish-workshop ${WORKSHOP_DIRECTORY} \
+            --export-workshop ${{runner.temp}}/${WORKSHOP_DIRECTORY}/workshop.yaml \
             --repository=ghcr.io/${REPOSITORY_OWNER} \
             --workshop-version=${REPOSITORY_TAG} \
             --registry-username=${{github.actor}} \
