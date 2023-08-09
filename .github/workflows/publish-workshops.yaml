@@ -34,6 +34,8 @@ jobs:
       shell: bash
       run: |
         echo WORKSHOPS="lab-builtin-vcluster,lab-shared-vcluster,lab-remote-cluster" >>${GITHUB_ENV}
+        echo REPOSITORY_OWNER=$(echo "${{github.repository_owner}}"" | tr '[:upper:]' '[:lower:]') >>${GITHUB_ENV}
+        echo REPOSITORY_TAG=$(echo "${{github.ref}}"" | sed -e 's%refs/tags/%%') >>${GITHUB_ENV}
 
     - name: Publish workshops and create workshop definition
       shell: bash
@@ -42,8 +44,8 @@ jobs:
           mkdir -p ${{runner.temp}}/workshops/${WORKSHOP}
           educates publish-workshop workshops/${WORKSHOP} \
             --export-workshop ${{runner.temp}}/workshops/${WORKSHOP}/workshop.yaml \
-            --repository=ghcr.io/${{github.repository_owner|lower}} \
-            --workshop-version=${{github.ref.replace('refs/tags/','')}} \
+            --repository=ghcr.io/${REPOSITORY_OWNER} \
+            --workshop-version=${REPOSITORY_TAG} \
             --registry-username=${{github.actor}} \
             --registry-password=${{secrets.GITHUB_TOKEN}}
         done
@@ -61,8 +63,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
-        tag_name: ${{github.ref.replace('refs/tags/','')}}
-        name: ${{github.repository_name}}:${{github.ref.replace('refs/tags/','')}}
+        tag_name: ${REPOSITORY_TAG}
+        name: ${{github.repository_name}}:${REPOSITORY_TAG}
         draft: false
         prerelease: false
         files: |
