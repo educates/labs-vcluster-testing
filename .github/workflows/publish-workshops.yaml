@@ -54,7 +54,7 @@ jobs:
       shell: bash
       run: |
         ytt -f ${{runner.temp}}/workshops > ${{runner.temp}}/workshops.yaml
-        (cd ${{runner.temp}}; tar -cvfz workshops.tar.gz workshops)
+        (cd ${{runner.temp}}; tar cvfz workshops.tar.gz workshops)
         (cd ${{runner.temp}}; zip workshops.zip -r workshops)
 
     - name: Create the GitHub release
