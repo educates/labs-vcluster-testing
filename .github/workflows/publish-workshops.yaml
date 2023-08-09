@@ -30,31 +30,43 @@ jobs:
         imgpkg pull -i ghcr.io/vmware-tanzu-labs/educates-client-programs:2.6.0-alpha.25 -o /tmp/client-programs
         mv /tmp/client-programs/educates-linux-amd64 /usr/local/bin/educates
 
-    - name: Calculate release variables
+    - name: Setup the list of workshop names
       shell: bash
       run: |
-        REPOSITORY_NAME=${{github.event.repository.name}}
-        echo "REPOSITORY_NAME=${REPOSITORY_NAME,,}" >>${GITHUB_ENV}
-        echo "REPOSITORY_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >>${GITHUB_ENV}
-        echo "REPOSITORY_TAG=${GITHUB_REF#refs/tags/}" >>${GITHUB_ENV}
-        echo "GITHUB_ACTOR=${{github.actor}}" >>${GITHUB_ENV}
-        echo "GITHUB_TOKEN=${{secrets.GITHUB_TOKEN}}" >>${GITHUB_ENV}
-        echo "OUTPUT_DIRECTORY=${{runner.temp}}" >>${GITHUB_ENV}
+        echo WORKSHOPS="lab-builtin-vcluster,lab-shared-vcluster,lab-remote-cluster" >>${GITHUB_ENV}
 
     - name: Publish workshops and create workshop definition
       shell: bash
       run : |
-        WORKSHOPS="
-          lab-builtin-vcluster \
-          lab-shared-vcluster \
-          lab-remote-cluster \
-         "
-        for WORKSHOP in $WORKSHOPS; do
-          mkdir -p ${OUTPUT_DIRECTORY}/workshops/${WORKSHOP}
+        for WORKSHOP in $(echo "$WORKSHOPS" | tr ',' '\n'); do
+          mkdir -p ${{runner.temp}}/workshops/${WORKSHOP}
           educates publish-workshop workshops/${WORKSHOP} \
-            --export-workshop ${OUTPUT_DIRECTORY}/workshops/${WORKSHOP}/workshop.yaml \
-            --repository=ghcr.io/${REPOSITORY_OWNER} \
-            --workshop-version=${REPOSITORY_TAG} \
-            --registry-username=${GITHUB_ACTOR} \
-            --registry-password=${GITHUB_TOKEN}
+            --export-workshop ${{runner.temp}}/workshops/${WORKSHOP}/workshop.yaml \
+            --repository=ghcr.io/${{github.repository_owner|lower}} \
+            --workshop-version=${{github.ref.replace('refs/tags/','')}} \
+            --registry-username=${{github.actor}} \
+            --registry-password=${{secrets.GITHUB_TOKEN}}
         done
+
+    - name: Generate release files for workshops
+      shell: bash
+      run: |
+        ytt -f ${{runner.temp}}/workshops > ${{runner.temp}}/workshops.yaml
+        (cd ${{runner.temp}}; tar -cvfz workshops.tar.gz workshops)
+        (cd ${{runner.temp}}; zip workshops.zip -r workshops)
+
+    - name: Create the GitHub release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        tag_name: ${{github.ref.replace('refs/tags/','')}}
+        name: ${{github.repository_name}}:${{github.ref.replace('refs/tags/','')}}
+        draft: false
+        prerelease: false
+        files: |
+          ${{runner.temp}}/workshops.tar.gz
+          ${{runner.temp}}/workshops.zip
+          ${{runner.temp}}/workshops.yaml
+          resources/trainingportal.yaml
