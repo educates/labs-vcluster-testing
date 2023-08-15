@@ -143,7 +143,7 @@ spec:
     assets:
       files:
       - image:
-          url: $(image_repository)/labs-vcluster-testing/lab-shared-vcluster-files:latest
+          url: $(image_repository)/labs-vcluster-testing/lab-shared-vcluster-files:$(workshop_version) 
     objects:
     - apiVersion: v1
       kind: ServiceAccount

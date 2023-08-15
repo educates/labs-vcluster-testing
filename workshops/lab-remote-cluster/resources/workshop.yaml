@@ -164,7 +164,7 @@ spec:
     assets:
       files:
       - image:
-          url: $(image_repository)/labs-vcluster-testing/lab-remote-cluster-files:latest
+          url: $(image_repository)/labs-vcluster-testing/lab-remote-cluster-files:$(workshop_version)
     objects:
     - apiVersion: v1
       kind: ServiceAccount
