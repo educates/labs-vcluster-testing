@@ -1,7 +1,6 @@
 #@ load("@ytt:data", "data")
 
 #@ imageCaching = getattr(data.values, "imageCaching", True)
-#@ localContent = getattr(data.values, "localContent", False)
 
 ---
 apiVersion: training.educates.dev/v1beta1
@@ -40,18 +39,6 @@ spec:
         token:
           enabled: false
     applications:
-      workshop:
-        enabled: true
-        #@ if localContent:
-        proxy:
-          protocol: http
-          host: localhost.$(ingress_domain)
-          port: 10081
-          changeOrigin: false
-          headers:
-          - name: X-Session-Name
-            value: $(session_name)
-        #@ end
       terminal:
         enabled: true
         layout: split
