@@ -56,8 +56,6 @@ spec:
     - name: admin-credentials-config
       secret:
         secretName: $(session_name)-kubeconfig
-    - name: session-credentials-config
-      emptyDir: {}
     volumeMounts:
     - name: admin-credentials-config
       mountPath: /opt/kubeconfig
