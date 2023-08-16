@@ -35,27 +35,27 @@ jobs:
         echo REPOSITORY_NAME=${{github.event.repository.name}} >>${GITHUB_ENV}
         echo REPOSITORY_TAG=$(echo "${{github.ref}}" | sed -e 's%refs/tags/%%') >>${GITHUB_ENV}
 
-    - name: Publish workshops and create workshop definition
+    - name: Publish workshops and create workshop definitions
       shell: bash
       run : |
         for WORKSHOP_DIRECTORY in workshops/*; do
-          mkdir -p ${{runner.temp}}/${WORKSHOP_DIRECTORY}
+          mkdir -p ${{runner.temp}}/${WORKSHOP_DIRECTORY}/resources
           educates publish-workshop ${WORKSHOP_DIRECTORY} \
-            --export-workshop ${{runner.temp}}/${WORKSHOP_DIRECTORY}/workshop.yaml \
+            --export-workshop ${{runner.temp}}/${WORKSHOP_DIRECTORY}/resources/workshop.yaml \
             --image-repository=ghcr.io/${REPOSITORY_OWNER} \
             --workshop-version=${REPOSITORY_TAG} \
             --registry-username=${{github.actor}} \
             --registry-password=${{secrets.GITHUB_TOKEN}}
         done
 
-    - name: Generate release files for workshops
+    - name: Generate archives containing the workshop definitions
       shell: bash
       run: |
         ytt -f ${{runner.temp}}/workshops > ${{runner.temp}}/workshops.yaml
         (cd ${{runner.temp}}; tar cvfz workshops.tar.gz workshops)
         (cd ${{runner.temp}}; zip workshops.zip -r workshops)
 
-    - name: Create the GitHub release
+    - name: Create the GitHub release for the workshops
       id: create_release
       uses: softprops/action-gh-release@v1
       env:
