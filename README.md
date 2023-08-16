@@ -9,6 +9,9 @@ Workshops included are:
   demonstrating creation of a virtual cluster per workshop session using the
   builtin support provided by Educates.
 
+* [lab-admin-vcluster](workshops/lab-admin-vcluster) - A workshop demonstrating
+  creation of a virtual cluster with full admin access to the cluster.
+
 * [lab-shared-vcluster](workshops/lab-shared-vcluster) - A workshop
   demonstrating creation of a shared virtual cluster for the whole environment,
   with workshops users getting access to only a single namespace in the virtual
