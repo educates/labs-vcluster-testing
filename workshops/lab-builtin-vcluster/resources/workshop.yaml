@@ -1,8 +1,3 @@
-#@ load("@ytt:data", "data")
-
-#@ imageCaching = getattr(data.values, "imageCaching", True)
-
----
 apiVersion: training.educates.dev/v1beta1
 kind: Workshop
 metadata:
@@ -14,17 +9,18 @@ spec:
     image: $(image_repository)/labs-vcluster-testing/lab-builtin-vcluster-files:$(workshop_version)
     files:
     - directory:
-        path: workshop
-      path: workshop
+        path: .
+      includePaths:
+      - /workshop/**
+      - /resources/**
+      - /README.md
+      excludePaths:
+      - /workshop/.hugo_build.lock
+      - /workshop/resources/**
   workshop:
     files:
-    #@ if imageCaching:
-    - http:
-        url: http://$(assets_repository)/.tgz
-    #@ else:
     - image:
         url: $(image_repository)/labs-vcluster-testing/lab-builtin-vcluster-files:$(workshop_version)
-    #@ end
   session:
     namespaces:
       budget: medium
@@ -35,16 +31,11 @@ spec:
       terminal:
         enabled: true
         layout: split
-      editor:
-        enabled: true
       console:
+        enabled: true
+      editor:
         enabled: true
       vcluster:
         enabled: true
-  environment:
-    assets:
       files:
-      #@ if imageCaching:
-      - image:
-          url: $(image_repository)/labs-vcluster-testing/lab-builtin-vcluster-files:$(workshop_version)
-      #@ end
+        enabled: true

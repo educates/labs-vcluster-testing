@@ -1,1 +1,6 @@
-This is the initial landing page for your workshop. Include in this page a description of what your workshop is about.
+---
+title: Workshop Overview
+---
+
+This workshop demonstrates the builtin functionality provided by Educates for
+creating a virtual cluster per workshop session.
