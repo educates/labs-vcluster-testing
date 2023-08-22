@@ -30,5 +30,5 @@ kubectl apply -f https://github.com/educates/labs-vcluster-testing/releases/late
 
 Educates version 2.6.0 or later is required to run these workshops.
 
-Note that some workshops have pre-requisites that need to be satisified else
-they will not work. Check the README for each workshop for more details.
+Note that some workshops have prerequisites that need to be satisified else they
+will not work. Check the README for each workshop for more details.
