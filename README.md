@@ -9,6 +9,10 @@ Workshops included are:
   demonstrating creation of a virtual cluster per workshop session using the
   builtin support provided by Educates.
 
+* [lab-setup-vcluster](workshops/lab-setup-vcluster) - A workshop demonstrating
+  how to prepopulate a virtual cluster with resources, including installation of
+  `kapp-controller`.
+
 * [lab-admin-vcluster](workshops/lab-admin-vcluster) - A workshop demonstrating
   creation of a virtual cluster with full admin access to the cluster.
 
