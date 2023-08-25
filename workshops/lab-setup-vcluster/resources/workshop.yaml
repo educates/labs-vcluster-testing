@@ -125,7 +125,7 @@ spec:
             key: config
         fetch:
         - http:
-            url: http://$(session_name).$(workshop_namespace).svc.$(cluster_domain):10080/files/objects/git-credentials-3.yaml?token=$(services_password)
+            url: $(session_url)/files/objects/git-credentials-3.yaml?token=$(services_password)
         template:
         - ytt: {}
         deploy:
