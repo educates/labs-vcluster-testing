@@ -73,6 +73,9 @@ spec:
             extraArgs:
             - --tls-san=admin-vcluster.$(session_namespace).svc.$(cluster_domain)
             - --out-kube-config-server=https://admin-vcluster.$(session_namespace).svc.$(cluster_domain)
+          sync:
+            ingresses:
+              enabled: true
     - apiVersion: kappctrl.k14s.io/v1alpha1
       kind: App
       metadata:
@@ -94,6 +97,23 @@ spec:
             valuesFrom:
             - secretRef:
                 name: $(session_name)-admin-vcluster-values
+        - ytt:
+            inline:
+              paths:
+                overlays.yaml: |
+                  #@ load("@ytt:data", "data")
+                  #@ load("@ytt:overlay", "overlay")
+                  #@overlay/match by=overlay.all, expects="1+"
+                  ---
+                  metadata:
+                    #@overlay/match missing_ok=True
+                    ownerReferences:
+                      - apiVersion: training.educates.dev/v1beta1
+                        kind: WorkshopSession
+                        blockOwnerDeletion: true
+                        controller: true
+                        name: $(session_name)
+                        uid: $(workshop_session_uid)
         deploy:
         - kapp:
             rawOptions:

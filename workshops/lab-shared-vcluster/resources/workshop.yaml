@@ -162,6 +162,9 @@ spec:
             extraArgs:
             - --tls-san=shared-vcluster.$(workshop_namespace).svc.$(cluster_domain)
             - --out-kube-config-server=https://shared-vcluster.$(workshop_namespace).svc.$(cluster_domain)
+          sync:
+            ingresses:
+              enabled: true
     - apiVersion: kappctrl.k14s.io/v1alpha1
       kind: App
       metadata:
@@ -183,6 +186,23 @@ spec:
             valuesFrom:
             - secretRef:
                 name: shared-vcluster-values
+        - ytt:
+            inline:
+              paths:
+                overlays.yaml: |
+                  #@ load("@ytt:data", "data")
+                  #@ load("@ytt:overlay", "overlay")
+                  #@overlay/match by=overlay.all, expects="1+"
+                  ---
+                  metadata:
+                    #@overlay/match missing_ok=True
+                    ownerReferences:
+                      - apiVersion: training.educates.dev/v1beta1
+                        kind: WorkshopEnvironment
+                        blockOwnerDeletion: true
+                        controller: true
+                        name: $(environment_name)
+                        uid: $(workshop_environment_uid)
         deploy:
         - kapp:
             rawOptions:
