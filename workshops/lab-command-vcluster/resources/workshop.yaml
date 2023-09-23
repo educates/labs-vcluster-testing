@@ -13,7 +13,8 @@ spec:
       includePaths:
       - /workshop/**
       - /resources/**
-      - /README.md
+      - /exercises/**
+      - README.md
       excludePaths:
       - /workshop/.hugo_build.lock
       - /workshop/resources/**

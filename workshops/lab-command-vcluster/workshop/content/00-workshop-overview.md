@@ -4,7 +4,16 @@ title: Workshop Overview
 
 ```terminal:execute
 session: vcluster
+command: vcluster create test --extra-values ~/exercises/vcluster-values.yaml --connect
+```
+
+```terminal:execute
+session: vcluster
 command: vcluster create test --connect
+```
+
+```editor:open-file
+file: ~/exercises/vcluster-values.yaml
 ```
 
 ```terminal:execute
@@ -49,6 +58,18 @@ command: kubectl get serviceaccounts --context educates --namespace default
 
 ```dashboard:open-dashboard
 name: Console
+```
+
+```terminal:execute
+command: helm install --set ingress.enabled=true --set ingress.hostname=apache-{{< param session_name >}}.{{< param ingress_domain >}} httpd oci://registry-1.docker.io/bitnamicharts/apache
+```
+
+```terminal:execute
+command: kubectl rollout status deployment/httpd-apache
+```
+
+```terminal:execute
+command: curl http://apache-{{< param session_name >}}.{{< param ingress_domain >}}
 ```
 
 ```terminal:execute

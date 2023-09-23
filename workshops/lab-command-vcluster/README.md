@@ -1,3 +1,4 @@
-# Workshop
+Command vcluster
+================
 
-Workshop description
+A workshop demonstrating creation of a virtual cluster using the `vcluster` CLI.
