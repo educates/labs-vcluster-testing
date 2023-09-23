@@ -20,6 +20,10 @@ Workshops included are:
   automatic creation of a virtual cluster with full admin access to the cluster
   using `helm` resources.
 
+* [lab-contour-vcluster](workshops/lab-contour-vcluster) - A workshop
+  demonstrating installation of Contour ingress controller into a virtual
+  cluster rather than using underlying cluster ingress.
+
 * [lab-shared-vcluster](workshops/lab-shared-vcluster) - A workshop
   demonstrating creation of a shared virtual cluster for the whole workshop
   environment, with workshops users getting access to only a single namespace in
