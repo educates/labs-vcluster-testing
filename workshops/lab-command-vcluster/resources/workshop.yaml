@@ -1,0 +1,44 @@
+apiVersion: training.educates.dev/v1beta1
+kind: Workshop
+metadata:
+  name: "lab-command-vcluster"
+spec:
+  title: "Test of using the vcluster command"
+  description: "Test of creating a virtual cluster using the vcluster CLI."
+  publish:
+    image: $(image_repository)/labs-vcluster-testing/lab-command-vcluster-files:$(workshop_version)
+    files:
+    - directory:
+        path: .
+      includePaths:
+      - /workshop/**
+      - /resources/**
+      - /README.md
+      excludePaths:
+      - /workshop/.hugo_build.lock
+      - /workshop/resources/**
+  workshop:
+    files:
+    - image:
+        url: $(image_repository)/labs-vcluster-testing/lab-command-vcluster-files:$(workshop_version)
+  session:
+    namespaces:
+      budget: large
+      security:
+        policy: baseline
+    applications:
+      terminal:
+        enabled: true
+        layout: split
+      console:
+        enabled: true
+        vendor: octant
+      editor:
+        enabled: true
+      vcluster:
+        enabled: false
+      files:
+        enabled: true
+    dashboards:
+    - name: Cluster
+      url: terminal:vcluster

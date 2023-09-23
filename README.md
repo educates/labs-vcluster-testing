@@ -13,13 +13,17 @@ Workshops included are:
   how to prepopulate a virtual cluster with resources, including installation of
   `kapp-controller`.
 
+* [lab-command-vcluster](workshops/lab-command-vcluster) - A workshop
+  demonstrating creation of a virtual cluster using the `vcluster` CLI.
+
 * [lab-admin-vcluster](workshops/lab-admin-vcluster) - A workshop demonstrating
-  creation of a virtual cluster with full admin access to the cluster.
+  automatic creation of a virtual cluster with full admin access to the cluster
+  using `helm` resources.
 
 * [lab-shared-vcluster](workshops/lab-shared-vcluster) - A workshop
-  demonstrating creation of a shared virtual cluster for the whole environment,
-  with workshops users getting access to only a single namespace in the virtual
-  cluster.
+  demonstrating creation of a shared virtual cluster for the whole workshop
+  environment, with workshops users getting access to only a single namespace in
+  the virtual cluster.
 
 * [lab-remote-cluster](workshops/lab-remote-cluster) - A workshop demonstrating
   using a remote Kubernetes cluster, with workshops users getting access to only
