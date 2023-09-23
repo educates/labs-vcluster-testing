@@ -5,6 +5,9 @@ A series of workshops for demonstrating the use of virtual clusters.
 
 Workshops included are:
 
+* [lab-command-vcluster](workshops/lab-command-vcluster) - A workshop
+  demonstrating creation of a virtual cluster using the `vcluster` CLI.
+
 * [lab-builtin-vcluster](workshops/lab-builtin-vcluster) - A workshop
   demonstrating creation of a virtual cluster per workshop session using the
   builtin support provided by Educates.
@@ -12,9 +15,6 @@ Workshops included are:
 * [lab-setup-vcluster](workshops/lab-setup-vcluster) - A workshop demonstrating
   how to prepopulate a virtual cluster with resources, including installation of
   `kapp-controller`.
-
-* [lab-command-vcluster](workshops/lab-command-vcluster) - A workshop
-  demonstrating creation of a virtual cluster using the `vcluster` CLI.
 
 * [lab-admin-vcluster](workshops/lab-admin-vcluster) - A workshop demonstrating
   automatic creation of a virtual cluster with full admin access to the cluster
