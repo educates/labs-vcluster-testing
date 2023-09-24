@@ -1,4 +1,6 @@
 #@ load("@ytt:data", "data")
+
+#@ if data.values.policy == "jspolicy":
 ---
 apiVersion: policy.jspolicy.com/v1beta1
 kind: JsPolicy
@@ -17,3 +19,4 @@ spec:
         deny("Ingress host name must embed the workshop session name.");
       }
     })
+#@ end
