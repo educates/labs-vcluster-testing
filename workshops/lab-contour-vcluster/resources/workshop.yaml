@@ -72,15 +72,6 @@ spec:
               kind: Namespace
               metadata:
                 name: projectcontour
-              ---
-              # The helmTemplate support in App for kapp-controller appears to
-              # be buggy and requires namespace the same name as that holding
-              # the App in the local cluster to exist in the target cluster when
-              # using kubeconfig.
-              apiVersion: v1
-              kind: Namespace
-              metadata:
-                name: $(session_namespace)
     - apiVersion: kappctrl.k14s.io/v1alpha1
       kind: App
       metadata:

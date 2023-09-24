@@ -113,6 +113,7 @@ spec:
           developer: $(session_name)
           namespaces:
           - $(session_name)-n1
+          session: $(session_name)
     - apiVersion: kappctrl.k14s.io/v1alpha1
       kind: App
       metadata:
